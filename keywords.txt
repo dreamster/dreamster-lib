@@ -1,0 +1,5 @@
+Dreamster KEYWORD1
+scan KEYWORD2
+read KEYWORD2
+move KEYWORD2
+show KEYWORD2
