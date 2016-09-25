@@ -2,11 +2,8 @@
 
 Dreamster::Dreamster(void)
 {
-  pinMode(motor_left_n_, OUTPUT);
-  pinMode(motor_left_p_, OUTPUT);
-  pinMode(motor_right_n_, OUTPUT);
-  pinMode(motor_right_p_, OUTPUT);
-  pinMode(us_trigger_a_, OUTPUT);
+  leftMotor = new Motor(LEFT_MOTOR_PIN, 1);
+  rightMotor = new Motor(RIGHT_MOTOR_PIN, -1);
 
   pinMode(us_echo_a_, INPUT);
   pinMode(us_trigger_b_, OUTPUT);
@@ -26,8 +23,8 @@ Dreamster::Dreamster(void)
 
 void Dreamster::scan(uint16_t &a, uint16_t &b, uint16_t &c)
 {
-  a = scan_sensor(us_trigger_b_, us_echo_b_);
-  b = scan_sensor(us_trigger_a_, us_echo_a_);
+  a = scan_sensor(us_trigger_a_, us_echo_a_);
+  b = scan_sensor(us_trigger_b_, us_echo_b_);
   c = scan_sensor(us_trigger_c_, us_echo_c_);
 }
 
@@ -44,12 +41,10 @@ void Dreamster::show(uint8_t red, uint8_t green, uint8_t blue)
   analogWrite(led_b_, blue);
 }
 
-void Dreamster::move(int8_t left, int8_t right)
+void Dreamster::move(int left, int right)
 {
-  int8_t l = constrain(left, -100, 100);
-  int8_t r = constrain(right, -100, 100);
-  move_motor(motor_left_n_, motor_left_p_, l);
-  move_motor(motor_right_n_, motor_right_p_, r);
+  rightMotor->setSpeed(right);
+  leftMotor->setSpeed(left);
 }
 
 void Dreamster::move_motor(int p, int n, int16_t speed)
@@ -74,4 +69,44 @@ uint16_t Dreamster::scan_sensor(int trigger, int echo)
   delayMicroseconds(10);
   digitalWrite(trigger, LOW);
   return (uint16_t) pulseIn(echo, HIGH) / 5.8;
+}
+
+void Dreamster::update()
+{
+  // Update motor speed ramps
+  leftMotor->update();
+  rightMotor->update();
+}
+
+Dreamster::Motor::Motor(int pin, int dir)
+{
+  servo.attach(pin);
+  servo.write(90);
+  currentSpeed = 0;
+  targetSpeed = 0;
+  this->dir = dir;
+}
+
+void Dreamster::Motor::setSpeed(int speed)
+{
+  if (speed < (-clampSpeed)) speed = -clampSpeed;
+  if (speed > clampSpeed) speed = clampSpeed;
+
+  targetSpeed = speed;
+}
+
+int Dreamster::Motor::getSpeed()
+{
+  return currentSpeed;
+}
+
+void Dreamster::Motor::update()
+{
+  if (currentSpeed < targetSpeed)
+    currentSpeed += step;
+  else
+    if (currentSpeed > targetSpeed)
+      currentSpeed -= step;
+
+  servo.write(90 + dir * currentSpeed);
 }
