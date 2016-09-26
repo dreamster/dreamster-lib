@@ -30,15 +30,16 @@ class Dreamster
     Motor *leftMotor;
 
     Dreamster();
-    void scan(uint16_t &a, uint16_t &b, uint16_t &c);
+    void scan(int &a, int &b, int &c);
     void read(uint16_t &left, uint16_t &right);
     void move(int left, int right);
     void show(uint8_t red, uint8_t green, uint8_t blue);
     void update();
+    void setup();
 
   private:
 
-    uint16_t scan_sensor(int trigger, int echo);
+    int scan_sensor(int trigger, int echo);
     void move_motor(int p, int n, int16_t speed);
     // Ultrasound pingers
     const int us_trigger_a_ = A3;

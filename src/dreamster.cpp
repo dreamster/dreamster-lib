@@ -2,26 +2,9 @@
 
 Dreamster::Dreamster(void)
 {
-  leftMotor = new Motor(LEFT_MOTOR_PIN, 1);
-  rightMotor = new Motor(RIGHT_MOTOR_PIN, -1);
-
-  pinMode(us_echo_a_, INPUT);
-  pinMode(us_trigger_b_, OUTPUT);
-  pinMode(us_echo_b_, INPUT);
-  pinMode(us_trigger_c_, OUTPUT);
-  pinMode(us_echo_c_, INPUT);
-
-  pinMode(ir_r_, INPUT);
-  pinMode(ir_l_, INPUT);
-
-  pinMode(led_r_, OUTPUT);
-  pinMode(led_g_, OUTPUT);
-  pinMode(led_b_, OUTPUT);
-
-  Serial.begin(9600);
 }
 
-void Dreamster::scan(uint16_t &a, uint16_t &b, uint16_t &c)
+void Dreamster::scan(int &a, int &b, int &c)
 {
   a = scan_sensor(us_trigger_a_, us_echo_a_);
   b = scan_sensor(us_trigger_b_, us_echo_b_);
@@ -61,14 +44,16 @@ void Dreamster::move_motor(int p, int n, int16_t speed)
   }
 }
 
-uint16_t Dreamster::scan_sensor(int trigger, int echo)
+int Dreamster::scan_sensor(int trigger, int echo)
 {
+  long duration;
   digitalWrite(trigger, LOW);
   delayMicroseconds(2);
   digitalWrite(trigger, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigger, LOW);
-  return (uint16_t) pulseIn(echo, HIGH) / 5.8;
+  duration = pulseIn(echo, HIGH) / 5.8;
+  return duration;
 }
 
 void Dreamster::update()
@@ -76,6 +61,28 @@ void Dreamster::update()
   // Update motor speed ramps
   leftMotor->update();
   rightMotor->update();
+}
+
+void Dreamster::setup()
+{
+  pinMode(us_trigger_a_, OUTPUT);
+  pinMode(us_echo_a_, INPUT);
+  pinMode(us_trigger_b_, OUTPUT);
+  pinMode(us_echo_b_, INPUT);
+  pinMode(us_trigger_c_, OUTPUT);
+  pinMode(us_echo_c_, INPUT);
+
+  pinMode(ir_r_, INPUT);
+  pinMode(ir_l_, INPUT);
+
+  pinMode(led_r_, OUTPUT);
+  pinMode(led_g_, OUTPUT);
+  pinMode(led_b_, OUTPUT);
+
+  leftMotor = new Motor(LEFT_MOTOR_PIN, 1);
+  rightMotor = new Motor(RIGHT_MOTOR_PIN, -1);
+
+  Serial.begin(9600);
 }
 
 Dreamster::Motor::Motor(int pin, int dir)
