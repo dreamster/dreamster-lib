@@ -2,28 +2,45 @@
 #define _DREAMSTER_H_
 
 #include "Arduino.h"
+#include "Servo/Servo.h"
 #include <stdint.h>
+
+#define LEFT_MOTOR_PIN 6
+#define RIGHT_MOTOR_PIN 9
 
 class Dreamster
 {
   public:
-    Dreamster();
+    class Motor {
+      Servo servo;
+      int currentSpeed;
+      int targetSpeed;
+      int dir;
+      const int step = 1;
+      const int clampSpeed = 80;
 
-    void scan(uint16_t &a, uint16_t &b, uint16_t &c);
+      public:
+      Motor(int pin, int dir);
+      void setSpeed(int speed);
+      int getSpeed();
+      void update();
+    };
+
+    Motor *rightMotor;
+    Motor *leftMotor;
+
+    Dreamster();
+    void scan(int &a, int &b, int &c);
     void read(uint16_t &left, uint16_t &right);
-    void move(int8_t left, int8_t right);
+    void move(int left, int right);
     void show(uint8_t red, uint8_t green, uint8_t blue);
+    void update();
+    void setup();
 
   private:
 
-    uint16_t scan_sensor(int trigger, int echo);
+    int scan_sensor(int trigger, int echo);
     void move_motor(int p, int n, int16_t speed);
-
-    // Motor outputs
-    const int motor_right_p_ = 9;
-    const int motor_right_n_ = 10;
-    const int motor_left_p_ = 5;
-    const int motor_left_n_ = 6;
     // Ultrasound pingers
     const int us_trigger_a_ = A3;
     const int us_echo_a_ = 8;
