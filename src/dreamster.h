@@ -31,11 +31,12 @@ class Dreamster
 
     Dreamster();
     void scan(int &a, int &b, int &c);
-    void read(uint16_t &left, uint16_t &right);
+    void read(int &left, int &right);
     void move(int left, int right);
     void show(uint8_t red, uint8_t green, uint8_t blue);
     void update();
     void setup();
+    void sleep(long msec);
 
   private:
 

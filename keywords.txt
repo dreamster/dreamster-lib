@@ -3,3 +3,7 @@ scan KEYWORD2
 read KEYWORD2
 move KEYWORD2
 show KEYWORD2
+update KEYWORD2
+setup KEYWORD2
+sleep KEYWORD2
+

@@ -11,7 +11,7 @@ void Dreamster::scan(int &a, int &b, int &c)
   c = scan_sensor(us_trigger_c_, us_echo_c_);
 }
 
-void Dreamster::read(uint16_t &left, uint16_t &right)
+void Dreamster::read(int &left, int &right)
 {
   left = analogRead(ir_l_);
   right = analogRead(ir_r_);
@@ -83,6 +83,19 @@ void Dreamster::setup()
   rightMotor = new Motor(RIGHT_MOTOR_PIN, -1);
 
   Serial.begin(9600);
+}
+
+/**
+ * Sleep for msec milliseconds. The robot keeps updating it's status.
+ * @param msec Time in milliseconds to sleep.
+ */
+void Dreamster::sleep(long msec)
+{
+  unsigned long start = millis();
+  while ((millis() - start) < msec)
+  {
+    update();
+  }
 }
 
 Dreamster::Motor::Motor(int pin, int dir)
