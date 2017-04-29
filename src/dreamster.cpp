@@ -27,9 +27,6 @@ void Dreamster::scan_c(int &c)
 }
 
 void Dreamster::read_ir(uint16_t &left, uint16_t &right)
-
-void Dreamster::read(int &left, int &right)
-{
   left = analogRead(ir_l_);
   right = analogRead(ir_r_);
 }
