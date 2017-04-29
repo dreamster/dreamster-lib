@@ -35,7 +35,6 @@ class Dreamster
     void scan_b(int &b);
     void scan_c(int &c);
     void read_ir(uint16_t &left, uint16_t &right);
-    void read(int &left, int &right);
     void move(int left, int right);
     void show(uint8_t red, uint8_t green, uint8_t blue);
     void update();
