@@ -11,6 +11,23 @@ void Dreamster::scan(int &a, int &b, int &c)
   c = scan_sensor(us_trigger_c_, us_echo_c_);
 }
 
+void Dreamster::scan_a(int &a)
+{
+  a = scan_sensor(us_trigger_a_, us_echo_a_);
+}
+
+void Dreamster::scan_b(int &b)
+{
+  b = scan_sensor(us_trigger_b_, us_echo_b_);
+}
+
+void Dreamster::scan_c(int &c)
+{
+  c = scan_sensor(us_trigger_c_, us_echo_c_);
+}
+
+void Dreamster::read_ir(uint16_t &left, uint16_t &right)
+
 void Dreamster::read(int &left, int &right)
 {
   left = analogRead(ir_l_);
