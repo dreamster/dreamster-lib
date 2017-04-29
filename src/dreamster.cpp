@@ -27,6 +27,7 @@ void Dreamster::scan_c(int &c)
 }
 
 void Dreamster::read_ir(uint16_t &left, uint16_t &right)
+{
   left = analogRead(ir_l_);
   right = analogRead(ir_r_);
 }
@@ -103,7 +104,7 @@ void Dreamster::setup()
  * Sleep for msec milliseconds. The robot keeps updating it's status.
  * @param msec Time in milliseconds to sleep.
  */
-void Dreamster::sleep(long msec)
+void Dreamster::sleep(unsigned long msec)
 {
   unsigned long start = millis();
   while ((millis() - start) < msec)

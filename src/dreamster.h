@@ -39,7 +39,7 @@ class Dreamster
     void show(uint8_t red, uint8_t green, uint8_t blue);
     void update();
     void setup();
-    void sleep(long msec);
+    void sleep(unsigned long msec);
 
   private:
 
