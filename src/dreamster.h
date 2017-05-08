@@ -2,7 +2,7 @@
 #define _DREAMSTER_H_
 
 #include "Arduino.h"
-#include "Servo/Servo.h"
+#include "Servo.h"
 #include <stdint.h>
 
 #define LEFT_MOTOR_PIN 6
