@@ -62,12 +62,15 @@ void Dreamster::move_motor(int p, int n, int16_t speed)
 int Dreamster::scan_sensor(int trigger, int echo)
 {
   long duration;
+  const unsigned int sensor_timeout_us_ = 32L * 1000L;
+
   digitalWrite(trigger, LOW);
   delayMicroseconds(2);
   digitalWrite(trigger, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigger, LOW);
-  duration = pulseIn(echo, HIGH) / 5.8;
+  duration = pulseIn(echo, HIGH, sensor_timeout_us_) / 5.8;
+  
   return duration;
 }
 
