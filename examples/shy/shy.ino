@@ -13,12 +13,12 @@ int dist_us_c;
 uint16_t ir_left;
 uint16_t ir_right;
 
-const int floor_limit = 100; // assumes white floor with black border
+const int floor_limit = 20; // assumes white floor with black border
 const int distance_limit = 80;
 
 // use this to calibrate the motors
 const int left_motor_offset = -2;
-const int right_motor_offset = 6;
+const int right_motor_offset = 2;
 
 void setup() {
   robot.setup();
