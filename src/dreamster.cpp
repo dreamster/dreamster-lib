@@ -90,8 +90,8 @@ void Dreamster::setup()
   pinMode(us_trigger_c_, OUTPUT);
   pinMode(us_echo_c_, INPUT);
 
-  pinMode(ir_r_, INPUT);
   pinMode(ir_l_, INPUT);
+  pinMode(ir_r_, INPUT);
 
   pinMode(led_r_, OUTPUT);
   pinMode(led_g_, OUTPUT);

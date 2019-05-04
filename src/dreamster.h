@@ -53,8 +53,8 @@ class Dreamster
     const int us_trigger_c_ = A5;
     const int us_echo_c_ = 7;
     // Ir sensors
-    const int ir_r_ = A1;
-    const int ir_l_ = A0;
+    const int ir_l_ = A1;
+    const int ir_r_ = A0;
     // Leds
     const int led_r_ = 12;
     const int led_g_ = 11;
