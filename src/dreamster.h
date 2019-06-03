@@ -34,7 +34,7 @@ class Dreamster
     void scan_a(int &a);
     void scan_b(int &b);
     void scan_c(int &c);
-    void read_ir(uint16_t &left, uint16_t &right);
+    void read_ir(int &left, int &right);
     void move(int left, int right);
     void show(uint8_t red, uint8_t green, uint8_t blue);
     void update();
@@ -44,6 +44,7 @@ class Dreamster
   private:
 
     int scan_sensor(int trigger, int echo);
+    int scan_sensor_pulsein(int trigger, int echo);
     void move_motor(int p, int n, int16_t speed);
     // Ultrasound pingers
     const int us_trigger_a_ = A3;
