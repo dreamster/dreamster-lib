@@ -25,8 +25,8 @@ enum DreamsterSonars {
 DreamsterSonar sonar[NUM_SONARS];
 int next_sonar = A;
 
-extern char debug_state;
-extern unsigned int debug_ticks;
+//extern char debug_state;
+//extern unsigned int debug_ticks;
 
 void timer_callback()
 {
@@ -92,8 +92,8 @@ void timer_callback()
     }
   }
   
-  debug_state = sonar[next_sonar].state;
-  debug_ticks = next_sonar;
+  //debug_state = sonar[next_sonar].state;
+  //debug_ticks = next_sonar;
   
   // if all sonars are on standby, proceed to ping the next sonar
   if (all_sonars_in_standby) {
