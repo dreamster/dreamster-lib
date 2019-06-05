@@ -26,6 +26,8 @@ PID motores_pid(&input, &output, &setpoint, k_p, k_i, k_d, DIRECT);
 
 void setup() {
   
+  robot.setup();
+  
   if (USAR_SERIAL) {
     Serial.begin(SERIAL_BPS);
   }  
@@ -56,10 +58,11 @@ void loop() {
 }
 
 void calibrar() {
-int valor_sensor_linea = 1023;
-int valor_sensor_piso = 0;
-int ultimo_tiempo_sensor;
-int contador_sensor = 0;
+  const int DIFERENCIA_PISO_LINEA = 45; // valor previo a calibración
+  int valor_sensor_linea = 1023;
+  int valor_sensor_piso = 0;
+  int ultimo_tiempo_sensor;
+  int contador_sensor = 0;
   
   leds.redOn();
 
@@ -89,16 +92,24 @@ int contador_sensor = 0;
         valor_sensor_linea = sensores[i];
       }
     }
+    if (USAR_SERIAL) {
+      debug("I: %.4u ", sensores[IZQ]);
+      debug("D: %.4u ", sensores[DER]);
+      debug("V1: %.4u ", abs(valor_sensor_piso - valor_sensor_linea));
+      debug("V2: %.4u ", DIFERENCIA_PISO_LINEA);
+      Serial.print("\n");
+    }
+
     
     // si todavía no encontré la línea, sigo esperando
-    if (abs(valor_sensor_piso - valor_sensor_linea) < 100) {
+    if (abs(valor_sensor_piso - valor_sensor_linea) < DIFERENCIA_PISO_LINEA) {
       continue;
     }
     
-    // si pasaron al menos 100 ms desde la última vez,
+    // si pasaron al menos 250 ms desde la última vez,
     // y si encontré la línea, 
     // entonces sumo 1 al contador
-    if (millis() - ultimo_tiempo_sensor > 250 && sensores[IZQ] >= valor_sensor_linea - 50) {
+    if (millis() - ultimo_tiempo_sensor > 250 && sensores[IZQ] >= valor_sensor_linea - DIFERENCIA_PISO_LINEA) {
       contador_sensor++;
       ultimo_tiempo_sensor = millis();
       if (USAR_SERIAL) {

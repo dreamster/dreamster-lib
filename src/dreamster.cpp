@@ -1,6 +1,6 @@
 #include "dreamster.h"
 
-// global for use in ISR
+// global sonars for use in ISR
 enum DreamsterSonarStates {
   DREAMSTER_SONAR_BEGIN_TRIGGER = 'T',
   DREAMSTER_SONAR_WAITING_ECHO = 'W',
@@ -24,6 +24,22 @@ enum DreamsterSonars {
 };
 DreamsterSonar sonar[NUM_SONARS];
 int next_sonar = A;
+
+// global motors for use in ISR
+struct DreamsterMotor {
+  int pin;
+  int current_value;
+  int target_value;
+  const int motor_speed_step = 1;
+};
+enum DreamsterMotors {
+  L = 0, 
+  R = 1,
+  NUM_MOTORS = 2,
+};
+DreamsterMotor motor[NUM_MOTORS];
+int motor_ticks = 0;
+const int motor_ticks_update = 20; // update every 580us
 
 //extern char debug_state;
 //extern unsigned int debug_ticks;
@@ -102,6 +118,19 @@ void timer_callback()
     if (next_sonar == NUM_SONARS) next_sonar = A;
   }
   
+  // motors
+  motor_ticks++;
+  if (motor_ticks == motor_ticks_update) {
+    motor_ticks = 0;
+    for (int i = 0; i < NUM_MOTORS; i++) {
+      if (motor[i].current_value < motor[i].target_value) {
+        motor[i].current_value = motor[i].current_value + motor[i].motor_speed_step;
+      } else if (motor[i].current_value > motor[i].target_value) {
+        motor[i].current_value = motor[i].current_value - motor[i].motor_speed_step;
+      }
+      analogWrite(motor[i].pin, motor[i].current_value);
+    }
+  }
 }
 
 Dreamster::Dreamster(void)
@@ -130,7 +159,7 @@ void Dreamster::scan_c(int &c)
   c = sonar[C].distance;
 }
 
-void Dreamster::read_ir(int &left, int &right)
+void Dreamster::read_ir(uint16_t &left, uint16_t &right)
 {
   left = analogRead(ir_l_);
   right = analogRead(ir_r_);
@@ -145,15 +174,54 @@ void Dreamster::show(uint8_t red, uint8_t green, uint8_t blue)
 
 void Dreamster::move(int left, int right)
 {
-  rightMotor->setSpeed(right);
-  leftMotor->setSpeed(left);
+  // Neutral servo position is 1500us, CW is 1500~1000us and CCW is 1500~2000us,
+  // and the left servo runs opposite to the right servo.
+  // Arduino's pwm run at 480Hz, which means the usable range goes approx. from 
+  // 110 (898.69us) to 255 (2083.33us), with the dead center at 184 (1503.27us).
+  
+  int direction;
+  int min_value;
+  int max_value;
+
+  // set maximum speed, both forward (+) and backward (-)
+  if (left < -maximum_speed_) left = -maximum_speed_;
+  if (right < -maximum_speed_) right = -maximum_speed_;
+  if (left > maximum_speed_) left = maximum_speed_;
+  if (right > maximum_speed_) right = maximum_speed_;
+  
+  // left motor
+  direction = 1;
+  min_value = left_neutral_center_ - (value_from_center_ * direction);
+  max_value = left_neutral_center_ + (value_from_center_ * direction);
+  left = map(left, -100, 100, min_value, max_value);
+
+  // right motor
+  direction = -1; // right motor is reversed
+  min_value = right_neutral_center_ - (value_from_center_ * direction);
+  max_value = right_neutral_center_ + (value_from_center_ * direction);
+  right = map(right, -100, 100, min_value, max_value);
+
+  // set pwms
+  motor[L].target_value = left;
+  motor[R].target_value = right;
+}
+void Dreamster::calibrate_motors_zero(int left, int right)
+{
+  // set maximum calibration
+  if (left < -value_from_center_) left = -value_from_center_;
+  if (right < -value_from_center_) right = -value_from_center_;
+  if (left > value_from_center_) left = value_from_center_;
+  if (right > value_from_center_) right = value_from_center_;
+  
+  left_neutral_center_ = initial_neutral_center_ + left;
+  right_neutral_center_ = initial_neutral_center_ + right;
 }
 
 void Dreamster::update()
 {
   // Update motor speed ramps
-  leftMotor->update();
-  rightMotor->update();
+  // leftMotor->update();
+  // rightMotor->update();
 }
 
 void Dreamster::setup()
@@ -178,9 +246,12 @@ void Dreamster::setup()
   pinMode(led_r_, OUTPUT);
   pinMode(led_g_, OUTPUT);
   pinMode(led_b_, OUTPUT);
+  
+  motor[L].pin = left_motor_pin_;
+  motor[R].pin = right_motor_pin_;
 
-  leftMotor = new Motor(LEFT_MOTOR_PIN, 1);
-  rightMotor = new Motor(RIGHT_MOTOR_PIN, -1);
+  // leftMotor = new Motor(left_motor_, 1);
+  // rightMotor = new Motor(right_motor_, -1);
 
   Serial.begin(9600);
   
@@ -201,42 +272,44 @@ ISR(TIMER3_COMPA_vect) {
  */
 void Dreamster::sleep(unsigned long msec)
 {
-  unsigned long start = millis();
-  while ((millis() - start) < msec)
-  {
-    update();
-  }
+  delay(msec);
+  // unsigned long start = millis();
+  // while ((millis() - start) < msec)
+  // {
+    // update();
+  // }
 }
 
-Dreamster::Motor::Motor(int pin, int dir)
-{
-  servo.attach(pin);
-  servo.write(90);
-  currentSpeed = 0;
-  targetSpeed = 0;
-  this->dir = dir;
-}
+// Dreamster::Motor::Motor(int pin, int dir)
+// {
+  // servo.attach(pin);
+  // servo.write(90);
+  // this->pin = pin;
+  // currentSpeed = 0;
+  // targetSpeed = 0;
+  // this->dir = dir;
+// }
 
-void Dreamster::Motor::setSpeed(int speed)
-{
-  if (speed < (-clampSpeed)) speed = -clampSpeed;
-  if (speed > clampSpeed) speed = clampSpeed;
+// void Dreamster::Motor::setSpeed(int speed)
+// {
+  // if (speed < (-clampSpeed)) speed = -clampSpeed;
+  // if (speed > clampSpeed) speed = clampSpeed;
 
-  targetSpeed = speed;
-}
+  // targetSpeed = speed;
+// }
 
-int Dreamster::Motor::getSpeed()
-{
-  return currentSpeed;
-}
+// int Dreamster::Motor::getSpeed()
+// {
+  // return currentSpeed;
+// }
 
-void Dreamster::Motor::update()
-{
-  if (currentSpeed < targetSpeed)
-    currentSpeed += step;
-  else
-    if (currentSpeed > targetSpeed)
-      currentSpeed -= step;
+// void Dreamster::Motor::update()
+// {
+  // if (currentSpeed < targetSpeed)
+    // currentSpeed += step;
+  // else
+    // if (currentSpeed > targetSpeed)
+      // currentSpeed -= step;
 
-  servo.write(90 + dir * currentSpeed);
-}
+  // servo.write(90 + dir * currentSpeed);
+// }
