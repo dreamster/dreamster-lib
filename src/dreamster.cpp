@@ -219,9 +219,7 @@ void Dreamster::calibrate_motors_zero(int left, int right)
 
 void Dreamster::update()
 {
-  // Update motor speed ramps
-  // leftMotor->update();
-  // rightMotor->update();
+  // legacy function, for backwards compatibility
 }
 
 void Dreamster::setup()
@@ -250,9 +248,6 @@ void Dreamster::setup()
   motor[L].pin = left_motor_pin_;
   motor[R].pin = right_motor_pin_;
 
-  // leftMotor = new Motor(left_motor_, 1);
-  // rightMotor = new Motor(right_motor_, -1);
-
   Serial.begin(9600);
   
   // set timer 3 to interrupt every 58us
@@ -267,49 +262,10 @@ ISR(TIMER3_COMPA_vect) {
 }
 
 /**
- * Sleep for msec milliseconds. The robot keeps updating it's status.
+ * Sleep for msec milliseconds. Identical to delay.
  * @param msec Time in milliseconds to sleep.
  */
 void Dreamster::sleep(unsigned long msec)
 {
   delay(msec);
-  // unsigned long start = millis();
-  // while ((millis() - start) < msec)
-  // {
-    // update();
-  // }
 }
-
-// Dreamster::Motor::Motor(int pin, int dir)
-// {
-  // servo.attach(pin);
-  // servo.write(90);
-  // this->pin = pin;
-  // currentSpeed = 0;
-  // targetSpeed = 0;
-  // this->dir = dir;
-// }
-
-// void Dreamster::Motor::setSpeed(int speed)
-// {
-  // if (speed < (-clampSpeed)) speed = -clampSpeed;
-  // if (speed > clampSpeed) speed = clampSpeed;
-
-  // targetSpeed = speed;
-// }
-
-// int Dreamster::Motor::getSpeed()
-// {
-  // return currentSpeed;
-// }
-
-// void Dreamster::Motor::update()
-// {
-  // if (currentSpeed < targetSpeed)
-    // currentSpeed += step;
-  // else
-    // if (currentSpeed > targetSpeed)
-      // currentSpeed -= step;
-
-  // servo.write(90 + dir * currentSpeed);
-// }

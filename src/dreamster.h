@@ -2,31 +2,11 @@
 #define _DREAMSTER_H_
 
 #include "Arduino.h"
-// #include "Servo.h"
 #include <stdint.h>
 
 class Dreamster
 {
   public:
-    // class Motor {
-      // Servo servo;
-      // int currentSpeed;
-      // int targetSpeed;
-      // int dir;
-      // int pin;
-      // const int step = 1;
-      // const int clampSpeed = 100;
-
-      // public:
-      // Motor(int pin, int dir);
-      // void setSpeed(int speed);
-      // int getSpeed();
-      // void update();
-    // };
-
-    // Motor *rightMotor;
-    // Motor *leftMotor;
-
     Dreamster();
     void scan(int &a, int &b, int &c);
     void scan_a(int &a);
@@ -41,7 +21,6 @@ class Dreamster
     void calibrate_motors_zero(int left, int right);
 
   private:
-
     int scan_sensor(int trigger, int echo);
     int scan_sensor_pulsein(int trigger, int echo);
     void move_motor(int p, int n, int16_t speed);
