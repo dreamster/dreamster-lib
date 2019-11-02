@@ -13,17 +13,18 @@ int dist_us_c;
 uint16_t ir_left;
 uint16_t ir_right;
 
-const int floor_limit = 20; // assumes white floor with black border
+const int floor_limit = 200; // assumes white floor with black border
 const int distance_limit = 80;
 
 // use this to calibrate the motors
-const int left_motor_offset = -2;
+const int left_motor_offset = -6;
 const int right_motor_offset = 2;
 
 void setup() {
   robot.setup();
 }
 
+unsigned long tick = 0;
 void loop() {
   int left_motor_speed = 0;
   int right_motor_speed = 0;
@@ -44,18 +45,27 @@ void loop() {
   if (dist_us_b < distance_limit && dist_us_c < distance_limit) {
     left_motor_speed = -50;
     right_motor_speed = -50;
+    tick = 0;
   } else {
     // if we are not feeling in danger, approach slowly
     if (ir_left > floor_limit && ir_right > floor_limit) {
-      left_motor_speed = 4;
-      right_motor_speed = 4;
+      tick++;
+      if (tick > 500) {
+        left_motor_speed = 50;
+        right_motor_speed = 50;
+      }
+      if (tick > 550) {
+        tick = 0;
+      }
     } else {
       // if the sensors show the table is over, then stay there
       left_motor_speed = 0;
       right_motor_speed = 0;
+      tick = 0;
     }
   }
   // set the motors speed with the respective offsets
   robot.move(left_motor_speed + left_motor_offset, right_motor_speed + right_motor_offset);
   robot.update();
+  delay(1); // ensures cycles every 1 ms at least
 }
