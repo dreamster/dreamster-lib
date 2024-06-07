@@ -1,11 +1,12 @@
 Dreamster	KEYWORD1
+calibrate_motors_zero	KEYWORD2
+move	KEYWORD2
+read_ir	KEYWORD2
 scan	KEYWORD2
 scan_a	KEYWORD2
 scan_b	KEYWORD2
 scan_c	KEYWORD2
-read_ir	KEYWORD2
-move	KEYWORD2
-show	KEYWORD2
-update	KEYWORD2
 setup	KEYWORD2
+show	KEYWORD2
 sleep	KEYWORD2
+update	KEYWORD2
