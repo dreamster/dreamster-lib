@@ -16,7 +16,7 @@ const int floor_limit = 15;
 
 // use this to calibrate the motors
 const int left_motor_offset = -2;
-const int right_motor_offset = 6;
+const int right_motor_offset = 1;
 
 void setup() {
   robot.setup();
