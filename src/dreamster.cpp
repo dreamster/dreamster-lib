@@ -10,6 +10,7 @@ enum DreamsterSonarStates {
 };
 struct DreamsterSonar {
   unsigned int distance = 0;
+  bool active = true;
   char state = DREAMSTER_SONAR_STANDBY;
   unsigned int ticks = 0;
   unsigned int cooldown_ticks = 0;
@@ -49,6 +50,7 @@ void timer_callback()
   bool all_sonars_in_standby = true;
   // sonars state machine
   for (int i = 0; i < NUM_SONARS; i++) {
+    if (sonar[i].active == false) continue;
     switch (sonar[i].state) {
       case DREAMSTER_SONAR_BEGIN_TRIGGER:
         // trigger ping and move to next state
@@ -215,6 +217,18 @@ void Dreamster::calibrate_motors_zero(int left, int right)
   
   left_neutral_center_ = initial_neutral_center_ + left;
   right_neutral_center_ = initial_neutral_center_ + right;
+}
+void Dreamster::set_sensor_a_active(bool active)
+{
+  sonar[A].active = active;
+}
+void Dreamster::set_sensor_b_active(bool active)
+{
+  sonar[B].active = active;
+}
+void Dreamster::set_sensor_c_active(bool active)
+{
+  sonar[C].active = active;
 }
 
 void Dreamster::update()

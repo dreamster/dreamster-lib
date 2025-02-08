@@ -19,6 +19,9 @@ class Dreamster
     void setup();
     void sleep(unsigned long msec);
     void calibrate_motors_zero(int left, int right);
+    void set_sensor_a_active(bool active);
+    void set_sensor_b_active(bool active);
+    void set_sensor_c_active(bool active);
 
   private:
     int scan_sensor(int trigger, int echo);
